@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="260" height="290" viewBox="0 0 260 290">
+  <defs>
+    <clipPath id="clip-rain">
+      <rect width="260" height="290"/>
+    </clipPath>
+  </defs>
+  <g id="rain" clip-path="url(#clip-rain)">
+    <path id="Pfad_9" data-name="Pfad 9" d="M35.925,0S0,42.491,0,67.676s17.983,32.529,35.925,32.8,35.625-9.794,35.353-32.8S35.925,0,35.925,0Z" transform="matrix(0.819, 0.574, -0.574, 0.819, 111.874, 49.619)" fill="#a8d2fc"/>
+    <path id="Pfad_10" data-name="Pfad 10" d="M26.39,0S0,31.214,0,49.715s13.21,23.9,26.39,24.1,26.17-7.195,25.97-24.1S26.39,0,26.39,0Z" transform="matrix(0.819, 0.574, -0.574, 0.819, 163.058, 127.813)" fill="#a8d2fc"/>
+    <path id="Pfad_42" data-name="Pfad 42" d="M20.357,0S0,23.337,0,37.169,10.19,55.035,20.357,55.184s20.187-5.379,20.033-18.015S20.357,0,20.357,0Z" transform="matrix(0.819, 0.574, -0.574, 0.819, 87.151, 172.991)" fill="#a8d2fc"/>
+  </g>
+</svg>
