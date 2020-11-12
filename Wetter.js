@@ -26,15 +26,14 @@ class Weather extends HTMLElement {
         shadowRoot.appendChild(tmpl.content.cloneNode(true));
     }
     connectedCallback(){
-        this.days = 1;
-        this.shadowRoot.getElementById("weather").setAttribute("class","current");
         let url = "https://api.openweathermap.org/data/2.5/onecall?lat=" + this.lat + "&lon=" + this.lon + "&exclude=hourly,minutely&appid=" + this.apikey + "&units=" + this.units +"&lang=" + this.lang;
         fetch(url)
             .then(response => response.json()).then(res => {this.response = res.daily; this.updateWeather()})
             .catch(err => {
                 console.error(err);
             });
-
+        this.days = 1;
+        this.shadowRoot.getElementById("weather").setAttribute("class","current");
         this.shadowRoot.querySelector("#current").onclick=(e) =>this.updateDays(e);
         this.shadowRoot.querySelector("#three").onclick=(e) =>this.updateDays(e);
         this.shadowRoot.querySelector("#five").onclick=(e) =>this.updateDays(e);
@@ -80,6 +79,22 @@ class Weather extends HTMLElement {
         if(children.length < this.days){
             this.loadWeather();
         }
+        /*children = this.shadowRoot.getElementById("weather").querySelectorAll("daily-forecast:not(#show)");
+        for(let i =0; i < children.length; i++){
+            children[i].animate([{
+                transform: 'translateY(30px)',
+                opacity:'50%'
+            }, {
+                transform: 'translateY(0px)',
+                opacity: '100%'
+            }
+
+            ], {
+                duration: 1000,
+                iterations: 1,
+                delay: 50*i
+            })
+        }*/
 
         if(!this.shadowRoot.querySelector("#show") || !this.shadowRoot.querySelector(".chosen")){
             if(this.shadowRoot.querySelector(".chosen")){
