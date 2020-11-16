@@ -127,3 +127,8 @@ daily-forecast#show{
         width:50%;
     }
 }
+@media(max-width:300px){
+    .btn-group{
+        font-size:0.9em;
+    }
+}
