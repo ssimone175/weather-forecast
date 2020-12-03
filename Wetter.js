@@ -22,7 +22,7 @@ tmpl.innerHTML = `
     width:100%;
     padding:1em;
     font-family: Lato, sans-serif;
-    background:var(--background-deactived,#f2f2f2)
+    background:var(--background-deactived,#f8f8f8)
 }
 .btn-group button.active{
     background: var(--background,#fff);
