@@ -18,6 +18,7 @@ tmpl.innerHTML = `
     justify-content: space-between;
 }
 .btn-group button{
+    font-size:1em;
     border:none;
     width:100%;
     padding:1em;
@@ -63,53 +64,6 @@ daily-forecast#show{
     order:1;
     width:100%!important;
     height:auto;
-}
-.day{
-    text-align: center;
-    display:flex;
-    width:100%;
-    align-items: center;
-}
-.day .base{
-    width: 100%;
-}
-.day .extra{
-    display:none;
-}
-:host(#show) .day .base{
-    width:50%;
-}
-:host(#show) .day .extra{
-    display: block;
-    width:50%;
-}
-.day p{
-    margin:0.25em;
-    font-size:0.9em;
-    text-align: left;
-    font-weight: 300;
-}
-.day p#date{
-    text-align:center;
-    font-size:1.2em;
-    margin-top: -5%;
-}
-.day img{
-    width:100%;
-    height:auto;
-}
-.day img.icon{
-    width:30px;
-    margin-right:5px;
-}
-.day .extra p{
-    display:flex;
-    align-items: center;
-}
-@media(max-width: 1000px){
-    .day p#date{
-        font-size:0.9em;
-    }
 }
 @media(max-width:367px){
     .five daily-forecast:not(#show):nth-child(3),
@@ -302,40 +256,6 @@ weather.innerHTML = `
 .btn-group button.active{
     background: var(--background,#fff);
 }
-daily-forecast{
-    background: var(--background,#fff);
-    padding:5%;
-    box-sizing: border-box;
-    display:flex;
-    justify-content: center;
-    order:2;
-}
-daily-forecast:not(#show){
-    cursor:pointer;
-}
-daily-forecast.chosen{
-    background:var(--background-chosen, #dff0ff);
-}
-.three daily-forecast:not(#show)
-{
-    width:33.3%;
-}
-.five daily-forecast:not(#show)
-{
-    width:20%;
-}
-.eight daily-forecast:not(#show)
-{
-    width:25%;
-}
-.current daily-forecast:not(#show){
-    display:none;
-}
-daily-forecast#show{
-    order:1;
-    width:100%!important;
-    height:auto;
-}
 .day{
     text-align: center;
     display:flex;
@@ -369,6 +289,7 @@ daily-forecast#show{
 .day img{
     width:100%;
     height:auto;
+    vertical-align: middle;
 }
 .day img.icon{
     width:30px;
@@ -383,23 +304,17 @@ daily-forecast#show{
         font-size:0.9em;
     }
 }
-@media(max-width:367px){
-    .five daily-forecast:not(#show):nth-child(3),
-    .five daily-forecast:not(#show):nth-child(4),
-    .five daily-forecast:not(#show):nth-child(5),
-    .five daily-forecast:not(#show):nth-child(6)
-    {
-        width:33.3%;
-    }
-    .five daily-forecast:not(#show):first-child,
-    .five daily-forecast:not(#show):nth-child(2),
-    .five daily-forecast#show~daily-forecast:not(#show):nth-child(3)
-    {
-        width:50%;
-    }
-}
 @media(max-width:300px){
     .btn-group{
+        font-size:0.9em;
+    }
+}
+
+@media(min-width:992px){
+    .day img{
+        width:80%
+    }
+    .day p#date{
         font-size:0.9em;
     }
 }</style>
@@ -498,7 +413,7 @@ class Daily extends HTMLElement {
     setRain(){
         let raintext = this.rain.pop + "%";
         if(this.rain.rain){raintext += ", " + this.rain.rain + "mm"};
-        if(this.rain.snow){raintext += ", Schnee:" + this.rain.snow + "mm"};
+        if(this.rain.snow){raintext += ", Schnee: " + this.rain.snow + "mm"};
         this.shadowRoot.querySelector("#rain span").innerText= raintext;
     }
     setWind(){
