@@ -236,26 +236,6 @@ weather.innerHTML = `
     margin-left:auto;
     margin-right:auto;
 }
-#weather{
-    display:flex;
-    position: relative;
-    flex-wrap: wrap;
-    background:var(--background,#fff);
-}
-.btn-group{
-    display: flex;
-    justify-content: space-between;
-}
-.btn-group button{
-    border:none;
-    width:100%;
-    padding:1em;
-    font-family: Lato, sans-serif;
-    background:var(--background-deactived, #f2f2f2)
-}
-.btn-group button.active{
-    background: var(--background,#fff);
-}
 .day{
     text-align: center;
     display:flex;
@@ -304,12 +284,6 @@ weather.innerHTML = `
         font-size:0.9em;
     }
 }
-@media(max-width:300px){
-    .btn-group{
-        font-size:0.9em;
-    }
-}
-
 @media(min-width:992px){
     .day img{
         width:80%
