@@ -108,7 +108,8 @@ class Weather extends HTMLElement {
     connectedCallback(){
         let url = "https://api.openweathermap.org/data/2.5/onecall?lat=" + this.lat + "&lon=" + this.lon + "&exclude=hourly,minutely&appid=" + this.apikey + "&units=" + this.units +"&lang=" + this.lang;
         fetch(url)
-            .then(response => response.json()).then(res => {this.response = res.daily; this.updateWeather()})
+            .then(response => response.json()).then(res => {this.response = res.daily; this.updateWeather()
+            console.log(this.response)})
             .catch(err => {
                 console.error(err);
             });
