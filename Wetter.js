@@ -175,11 +175,14 @@ class Weather extends HTMLElement {
             if(this.shadowRoot.querySelector("#show")){
                 this.shadowRoot.querySelector("#show").remove();
             }
-            let first = this.shadowRoot.querySelector("daily-forecast");
-            let clone = first.cloneNode(true);
-            first.setAttribute("class","chosen");
-            clone.setAttribute("id","show");
-            this.shadowRoot.getElementById("weather").appendChild(clone);
+            this.shadowRoot.querySelector("daily-forecast").setAttribute("class", "chosen");
+
+            let forecast = document.createElement("daily-forecast");
+            forecast.setAttribute("id","show");
+            forecast.item=this.response[0];
+            forecast.setAttribute("exclude", this.exclude);
+            forecast.setAttribute("iconBase", this.iconBase);
+            this.shadowRoot.getElementById("weather").appendChild(forecast);
         }
     }
     loadWeather(){
@@ -187,39 +190,22 @@ class Weather extends HTMLElement {
             for(let i =0; i < this.days; i ++){
                 let exists = false;
                 for(let child = 0; child < this.shadowRoot.getElementById("weather").childElementCount; child++){
-                    if (this.shadowRoot.getElementById("weather").children[child].getAttribute("date") === this.response[i].dt.toString()){
+                    if (this.shadowRoot.getElementById("weather").children[child].item === this.response[i]){
                         exists = true;
                     }
                 }
                 if(!exists){
                     let forecast = document.createElement("daily-forecast");
-                    forecast.setAttribute("icon", this.response[i].weather[0].icon);
-                    forecast.setAttribute("weather-text", this.response[i].weather[0].description);
-                    forecast.setAttribute("date", this.response[i].dt);
+                    forecast.item=this.response[i];
+                    forecast.setAttribute("exclude", this.exclude);
                     forecast.setAttribute("iconBase", this.iconBase);
-
-                    if(!this.exclude.includes("temperature")){
-                        forecast.setAttribute("temp-min", this.response[i].temp.min);
-                        forecast.setAttribute("temp-max", this.response[i].temp.max);
-                    }
-                    if(!this.exclude.includes("wind")){
-                        forecast.setAttribute("wind", this.response[i].wind_speed);
-                    }
-                    if(!this.exclude.includes("rain")){
-                        forecast.setAttribute("pop", this.response[i].pop);
-                        if(this.response[i].rain) forecast.setAttribute("rain", this.response[i].rain);
-                        if(this.response[i].snow) forecast.setAttribute("snow", this.response[i].snow);
-                    }
-                    if(!this.exclude.includes("sun")){
-                        forecast.setAttribute("sunrise", this.response[i].sunrise);
-                        forecast.setAttribute("sunset", this.response[i].sunset);
-                    }
                     forecast.onclick=(e)=>{
                         this.shadowRoot.querySelector(".chosen").removeAttribute("class");
                         this.shadowRoot.getElementById("show").remove();
                         let clone = e.target.cloneNode(true);
                         e.target.setAttribute("class","chosen");
                         clone.setAttribute("id","show");
+                        clone.item = e.target.item;
                         this.shadowRoot.getElementById("weather").appendChild(clone);
                     };
                     this.shadowRoot.getElementById("weather").appendChild(forecast);
@@ -229,6 +215,7 @@ class Weather extends HTMLElement {
     }
 }
 window.customElements.define('weather-forecast', Weather);
+
 let weather = document.createElement('template');
 weather.innerHTML = `
 <style>:host{
@@ -307,47 +294,15 @@ weather.innerHTML = `
     <p id="sunset"><img class="icon" alt="Sunset Icon" src="sunset.svg"/><span>No Data</span></p>
 </div>
 </div>`;
+
 class Daily extends HTMLElement {
     constructor() {
         super();
         const shadowRoot = this.attachShadow({mode: 'open'});
         shadowRoot.appendChild(weather.content.cloneNode(true));
     }
-    static get observedAttributes() {
-        return ['date', 'icon','weather-text', 'pop', 'rain', 'snow', 'temp-min', 'temp-max', 'wind', 'sunrise', 'sunset'];
-    }
-
-    get date(){
-        return this.getAttribute("date")||" ";}
-    get icon(){
-        return this.getAttribute("icon")||" ";}
-    get weatherText(){
-        return this.getAttribute("weather-text")|| " ";}
-    get temperature(){
-        if(this.getAttribute("temp-min") && this.getAttribute("temp-max")){
-            return {min: this.getAttribute("temp-min"),
-                max: this.getAttribute("temp-max")};
-        }else{
-            return undefined;
-        }
-    }
-    get rain(){
-        if(this.getAttribute("pop")){
-            return{
-                pop: parseInt((parseFloat(this.getAttribute("pop")) * 100 )),
-                rain: this.getAttribute("rain"),
-                snow: this.getAttribute("snow")
-            };
-        }else return undefined;
-    }
-    get wind(){
-        return this.getAttribute("wind")|| undefined;
-    }
-    get sun(){
-        if(this.getAttribute("sunrise") && this.getAttribute("sunset")){
-            return {sunrise: this.getAttribute("sunrise"),
-                sunset: this.getAttribute("sunset")};
-        }else return undefined;
+    get exclude(){
+        return this.getAttribute("exclude")  || " ";
     }
     get iconBase(){
         return this.getAttribute("iconBase");
@@ -359,25 +314,25 @@ class Daily extends HTMLElement {
         this.shadowRoot.querySelector("#sunset img").setAttribute("src",this.iconBase+"sunset.svg");
     }
     setDate(){
-        let dt = new Date(parseInt(this.date)*1000);
+        let dt = new Date(parseInt(this.item.dt)*1000);
         this.shadowRoot.getElementById("date").innerText= getWeekdayName(dt.getDay());
     }
     setText(){
-        this.shadowRoot.querySelector("#weather-text span").innerText=this.weatherText;
+        this.shadowRoot.querySelector("#weather-text span").innerText=this.item.weather[0].description;
     }
     setIcon(){
-        this.shadowRoot.getElementById("icon").setAttribute("src", this.iconBase + this.icon+".png");
-        this.shadowRoot.getElementById("icon").setAttribute("alt", this.weatherText);
+        this.shadowRoot.getElementById("icon").setAttribute("src", this.iconBase + this.item.weather[0].icon  +".png");
+        this.shadowRoot.getElementById("icon").setAttribute("alt", this.item.weather[0].description);
 
-        this.shadowRoot.getElementById("text-icon").setAttribute("src", this.iconBase + this.icon+".png");
-        this.shadowRoot.getElementById("text-icon").setAttribute("alt", this.weatherText);
+        this.shadowRoot.getElementById("text-icon").setAttribute("src", this.iconBase + this.item.weather[0].icon  +".png");
+        this.shadowRoot.getElementById("text-icon").setAttribute("alt", this.item.weather[0].description);
     }
     setTemp(){
-        this.shadowRoot.querySelector("#temperature span").innerText=this.temperature.min+"° / "+ this.temperature.max + "°";
-        if(parseFloat(this.temperature.min)<=10){
+        this.shadowRoot.querySelector("#temperature span").innerText=this.item.temp.min+"° / "+ this.item.temp.max + "°";
+        if(parseFloat(this.item.temp.min)<=10){
             this.shadowRoot.getElementById("temp-icon").setAttribute("src",this.iconBase+"temperature-cold.svg");
             this.shadowRoot.getElementById("temp-icon").setAttribute("alt","Cold Temperature Icon");
-        }else if(parseFloat(this.temperature.max)>=25){
+        }else if(parseFloat(this.item.temp.max)>=25){
             this.shadowRoot.getElementById("temp-icon").setAttribute("src",this.iconBase+"temperature-hot.svg");
             this.shadowRoot.getElementById("temp-icon").setAttribute("alt","Hot Temperature Icon");
         }else{
@@ -386,19 +341,19 @@ class Daily extends HTMLElement {
         }
     }
     setRain(){
-        let raintext = this.rain.pop + "%";
-        if(this.rain.rain){raintext += ", " + this.rain.rain + "mm"};
-        if(this.rain.snow){raintext += ", Schnee: " + this.rain.snow + "mm"};
+        let raintext = parseInt((parseFloat(this.item.pop) * 100 )) + "%";
+        if(this.item.rain){raintext += ", " + this.item.rain + "mm"};
+        if(this.item.snow){raintext += ", Schnee: " + this.item.snow + "mm"};
         this.shadowRoot.querySelector("#rain span").innerText= raintext;
     }
     setWind(){
-        this.shadowRoot.querySelector("#wind span").innerText=this.wind + "m/s";
+        this.shadowRoot.querySelector("#wind span").innerText=this.item.wind_speed + "m/s";
     }
     setSun(){
-        let sunr = new Date(parseInt(this.sun.sunrise)*1000);
+        let sunr = new Date(parseInt(this.item.sunrise)*1000);
         this.shadowRoot.querySelector("#sunrise span").innerText= sunr.getHours() + ":" + (sunr.getMinutes() <10? "0":"") + sunr.getMinutes();
 
-        let suns = new Date(parseInt(this.sun.sunset)*1000);
+        let suns = new Date(parseInt(this.item.sunset)*1000);
         this.shadowRoot.querySelector("#sunset span").innerText= suns.getHours() + ":" + (suns.getMinutes() <10? "0":"")+ suns.getMinutes() ;
     }
     connectedCallback(){
@@ -406,49 +361,26 @@ class Daily extends HTMLElement {
         this.setIcon();
         this.setDate();
         this.setText();
-        if(this.temperature){
+        if(!this.exclude.includes("temperature")){
             this.setTemp();
         }else{
             this.shadowRoot.getElementById("temperature").remove();
         }
-        if(this.rain){
+        if(!this.exclude.includes("rain")){
             this.setRain();
         }else{
             this.shadowRoot.getElementById("rain").remove();
         }
-        if(this.wind){
+        if(!this.exclude.includes("wind")){
             this.setWind();
         }else{
             this.shadowRoot.getElementById("wind").remove();
         }
-        if(this.sun){
+        if(!this.exclude.includes("sun")){
             this.setSun();
         }else{
             this.shadowRoot.getElementById("sunrise").remove();
             this.shadowRoot.getElementById("sunset").remove();
-        }
-    }
-    attributeChangedCallback(attrName, oldVal, newVal){
-        if((attrName ==="date") && oldVal !== newVal){
-            this.setDate();
-        }
-        if(attrName ==="weather-text" && oldVal !== newVal){
-            this.setText();
-        }
-        if(attrName==="icon"){
-            this.setIcon();
-        }
-        if((attrName ==="pop" || attrName ==="rain" || attrName ==="snow") && oldVal !== newVal && this.rain){
-            this.setRain();
-        }
-        if((attrName ==="temp-min" || attrName ==="temp-max") && oldVal !== newVal && this.temperature){
-            this.setTemp();
-        }
-        if(attrName ==="wind" && oldVal !== newVal && this.wind){
-            this.setWind();
-        }
-        if((attrName ==="sunset" || attrName ==="sunrise") && oldVal !== newVal && this.sun){
-            this.setSun();
         }
     }
 }
